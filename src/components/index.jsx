@@ -7,6 +7,9 @@ import Question from "./Question";
 import Options from "./Options";
 import NextButton from "./NextButton";
 import Progress from "./Progress";
+import Timer from "./Timer";
+import FinishScreen from "./FinishScreen";
+import Footer from "./Footer";
 
 export {
   Header,
@@ -18,4 +21,7 @@ export {
   Options,
   NextButton,
   Progress,
+  FinishScreen,
+  Timer,
+  Footer,
 };

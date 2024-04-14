@@ -8,10 +8,14 @@ import {
   Question,
   NextButton,
   Progress,
+  FinishScreen,
+  Timer,
+  Footer,
 } from "./components";
+import data from "./data/questions.json";
 
 // import data from "./data/questions.json";
-
+const SECS_PER_QUESTION = 30;
 const initialState = {
   questions: [],
   //'loading','error','ready','active','finished'
@@ -19,6 +23,8 @@ const initialState = {
   index: 0,
   answer: null,
   points: 0,
+  highscore: 0,
+  secondsRemaining: 10,
 };
 
 function reducer(state, action) {
@@ -38,6 +44,7 @@ function reducer(state, action) {
       return {
         ...state,
         status: "active",
+        secondsRemaining: state.questions.length * SECS_PER_QUESTION,
       };
     case "newAnswer": {
       const question = state.questions.at(state.index);
@@ -58,24 +65,55 @@ function reducer(state, action) {
         answer: null,
       };
 
+    case "finish":
+      return {
+        ...state,
+        status: "finished",
+        highscore: Math.max(state.points, state.highscore),
+      };
+
+    case "restart":
+      return {
+        ...initialState,
+        questions: state.questions,
+        status: "ready",
+        secondsRemaining: null,
+      };
+
+    case "tick":
+      return {
+        ...state,
+        secondsRemaining: state.secondsRemaining - 1,
+        status: state.secondsRemaining === 0 ? "finished" : state.status,
+      };
+
     default:
       throw new Error("Action Unknown");
   }
 }
 
 function App() {
-  const [{ questions, status, index, answer, points }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
+  const [
+    { questions, status, index, answer, points, highscore, secondsRemaining },
+    dispatch,
+  ] = useReducer(reducer, initialState);
   const noOfQuestions = questions.length;
   const maxPoints = questions.reduce((prev, cur) => prev + cur.points, 0);
 
   useEffect(function () {
-    fetch("http://localhost:8000/questions")
-      .then((res) => res.json())
-      .then((data) => dispatch({ type: "dataRecieved", payload: data }))
-      .catch(() => dispatch({ type: "dataFailed" }));
+    // fetch("data/questions.json")
+    //   .then((res) => res.json())
+    //   .then((data) => dispatch({ type: "dataRecieved", payload: data }))
+    //   .catch(() => dispatch({ type: "dataFailed" }));
+    async function fetchData() {
+      try {
+        dispatch({ type: "dataRecieved", payload: data.questions });
+      } catch (error) {
+        dispatch({ type: "dataFailed" });
+      }
+    }
+
+    fetchData();
   }, []);
 
   return (
@@ -102,8 +140,23 @@ function App() {
               dispatch={dispatch}
               answer={answer}
             />
-            <NextButton dispatch={dispatch} />
+            <Footer>
+              <Timer dispatch={dispatch} secondsRemaining={secondsRemaining} />
+              <NextButton
+                dispatch={dispatch}
+                index={index}
+                noOfQuestions={noOfQuestions}
+              />
+            </Footer>
           </>
+        )}
+        {status === "finished" && (
+          <FinishScreen
+            points={points}
+            maxPoints={maxPoints}
+            highscore={highscore}
+            dispatch={dispatch}
+          />
         )}
       </Main>
     </div>
