@@ -7,7 +7,6 @@ export default function Timer({ dispatch, secondsRemaining }) {
   useEffect(
     function () {
       const id = setInterval(function () {
-        // console.table("tick");
         dispatch({ type: "tick" });
       }, 1000);
 
