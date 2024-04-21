@@ -1,9 +1,12 @@
 import PropTypes from "prop-types";
-import { useQuiz } from "../context/QuizContext";
 
-export default function FinishScreen() {
+export default function FinishScreen({
+  points,
+  maxPoints,
+  highscore,
+  dispatch,
+}) {
   let emoji;
-  const { points, maxPoints, highscore, dispatch } = useQuiz();
   const percentage = (points / maxPoints) * 100;
   if (percentage === 100) emoji = "🥇";
   if (percentage >= 80 && percentage < 100) emoji = "🎉";

@@ -1,11 +1,9 @@
-import { useQuiz } from "../context/QuizContext";
-function Options() {
-  const { questions, dispatch, answer, index } = useQuiz();
-  const question = questions[index];
+import PropTypes from "prop-types";
+function Options({ question, dispatch, answer }) {
   const hasAnswered = answer !== null;
   return (
     <div className="options">
-      {questions[index].options.map((option, index) => (
+      {question.options.map((option, index) => (
         <button
           key={option}
           className={`btn btn-option ${index === answer ? "answer" : ""} ${
@@ -26,3 +24,9 @@ function Options() {
 }
 
 export default Options;
+
+Options.propTypes = {
+  question: PropTypes.object || null,
+  dispatch: PropTypes.func,
+  answer: PropTypes.number,
+};

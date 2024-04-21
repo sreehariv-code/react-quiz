@@ -1,7 +1,5 @@
-import { useQuiz } from "../context/QuizContext";
-
-function StartScreen() {
-  const { noOfQuestions, dispatch } = useQuiz();
+import PropTypes from "prop-types";
+function StartScreen({ noOfQuestions, dispatch }) {
   return (
     <div className="start">
       <h2>Welcome to the React Quiz!</h2>
@@ -16,4 +14,8 @@ function StartScreen() {
   );
 }
 
+StartScreen.propTypes = {
+  noOfQuestions: PropTypes.number,
+  dispatch: PropTypes.func,
+};
 export default StartScreen;
